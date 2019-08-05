@@ -18,7 +18,7 @@ class AsyncInfoController < ApplicationController
     end
     @user = current_user.decorate
     # Updates article analytics periodically:
-    ArticleAnalyticsFetcher.new.delay.update_analytics(@user.id) if rand(20) == 1
+    occasionally_update_analytics
     respond_to do |format|
       format.json do
         render json: {
@@ -38,15 +38,21 @@ class AsyncInfoController < ApplicationController
         username: @user.username,
         profile_image_90: ProfileImage.new(@user).get(90),
         followed_tag_names: @user.cached_followed_tag_names,
-        followed_tags: @user.cached_followed_tags.to_json(only: %i[id name bg_color_hex text_color_hex]),
+        followed_tags: @user.cached_followed_tags.to_json(only: %i[id name bg_color_hex text_color_hex hotness_score], methods: [:points]),
         followed_user_ids: @user.cached_following_users_ids,
         followed_organization_ids: @user.cached_following_organizations_ids,
+        followed_podcast_ids: @user.cached_following_podcasts_ids,
         reading_list_ids: ReadingList.new(@user).cached_ids_of_articles,
         saw_onboarding: @user.saw_onboarding,
         checked_code_of_conduct: @user.checked_code_of_conduct,
+        checked_terms_and_conditions: @user.checked_terms_and_conditions,
         number_of_comments: @user.comments.count,
         display_sponsors: @user.display_sponsors,
-        trusted: @user.trusted
+        trusted: @user.trusted,
+        experience_level: @user.experience_level,
+        preferred_languages_array: @user.preferred_languages_array,
+        config_body_class: @user.config_body_class,
+        pro: @user.pro?
       }
     end
   end
@@ -54,6 +60,7 @@ class AsyncInfoController < ApplicationController
   def user_cache_key
     "#{current_user&.id}__
     #{current_user&.last_sign_in_at}__
+    #{current_user&.last_followed_at}__
     #{current_user&.updated_at}__
     #{current_user&.reactions_count}__
     #{current_user&.comments_count}__
@@ -61,5 +68,11 @@ class AsyncInfoController < ApplicationController
     #{current_user&.checked_code_of_conduct}__
     #{current_user&.articles_count}__
     #{cookies[:remember_user_token]}"
+  end
+
+  private
+
+  def occasionally_update_analytics
+    ArticleAnalyticsFetcher.new.delay.update_analytics(@user.id) if Rails.env.production? && rand(ApplicationConfig["GA_FETCH_RATE"]) == 1
   end
 end

@@ -1,12 +1,12 @@
 class TagsController < ApplicationController
   before_action :set_cache_control_headers, only: [:index]
-  before_action :authenticate_user!, only: %i(edit update)
+  before_action :authenticate_user!, only: %i[edit update]
   after_action :verify_authorized
 
   def index
     skip_authorization
     @tags_index = true
-    @tags = Tag.all.order("hotness_score DESC").first(100)
+    @tags = Tag.includes(:sponsorship).order(hotness_score: :desc).limit(100)
   end
 
   def edit
@@ -24,6 +24,12 @@ class TagsController < ApplicationController
       flash[:error] = @tag.errors.full_messages
       render :edit
     end
+  end
+
+  def admin
+    tag = Tag.find_by!(name: params[:tag])
+    authorize tag
+    redirect_to "/admin/tags/#{tag.id}/edit"
   end
 
   private

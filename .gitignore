@@ -49,3 +49,12 @@ package-lock.json
 
 #Jetbrains Tools
 .idea/
+
+#sitemap
+/public/sitemap.xml.gz
+
+# Development Docker storage location
+_docker-storage/
+
+# YARD generated doc (in the Gitdocs folder)
+docs/.static/ruby-doc/

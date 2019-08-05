@@ -1,7 +1,11 @@
 require "rails_helper"
 
 RSpec.describe "EmailSubscriptions", type: :request do
-  let(:user) { create(:user) }
+  let(:user) { build(:user) }
+
+  before do
+    allow(User).to receive(:find).and_return(user)
+  end
 
   def generate_token(user_id)
     Rails.application.message_verifier(:unsubscribe).generate(
@@ -25,14 +29,14 @@ RSpec.describe "EmailSubscriptions", type: :request do
 
     it "handles error properly" do
       expect { get email_subscriptions_unsubscribe_url }.
-        to raise_error(ActionController::RoutingError)
+        to raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "won't work if it's past expiration date" do
       token = generate_token(user.id)
       Timecop.freeze(32.days.from_now) do
         get email_subscriptions_unsubscribe_url(ut: token)
-        expect(response).to render_template("invalid_token")
+        expect(response.body).to include("Token expired or invalid")
       end
     end
   end

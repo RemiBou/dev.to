@@ -15,6 +15,7 @@ module Api
       def update_or_create
         @client = create_octokit_client
         @repo = GithubRepo.find_or_create(fetched_repo_params)
+        current_user.touch(:github_repos_updated_at)
         if @repo.valid?
           render json: { featured: @repo.featured }
         else
@@ -31,9 +32,9 @@ module Api
 
       def fetched_repo_params
         params[:github_repo] = JSON.parse(params[:github_repo])
-        fetched_repo = @client.repositories.select do |repo|
+        fetched_repo = @client.repositories.detect do |repo|
           repo.id == permitted_attributes(GithubRepo)[:github_id_code].to_i
-        end.first
+        end
         {
           github_id_code: fetched_repo.id,
           user_id: current_user.id,

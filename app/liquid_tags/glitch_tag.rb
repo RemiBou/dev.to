@@ -2,23 +2,22 @@ require "uri"
 
 class GlitchTag < LiquidTagBase
   attr_accessor :uri
+  PARTIAL = "liquids/glitch".freeze
+
   def initialize(tag_name, id, tokens)
     super
-    @uri = build_uri(id)
+    @query = parse_options(id)
     @id = parse_id(id)
   end
 
   def render(_context)
-    html = <<-HTML
-      <div class="glitch-embed-wrap" style="height: 450px; width: 100%;margin: 1em auto 1.3em">
-        <iframe
-          sandbox="allow-same-origin allow-scripts allow-forms allow-top-navigation-by-user-activation"
-          src="#{@uri}"
-          alt="#{@id} on glitch"
-          style="height: 100%; width: 100%; border: 0;margin:0;padding:0"></iframe>
-      </div>
-    HTML
-    finalize_html(html)
+    ActionController::Base.new.render_to_string(
+      partial: PARTIAL,
+      locals: {
+        id: @id,
+        query: @query
+      },
+    )
   end
 
   private
@@ -30,6 +29,7 @@ class GlitchTag < LiquidTagBase
   def parse_id(input)
     id = input.split(" ").first
     raise StandardError, "Invalid Glitch ID" unless valid_id?(id)
+
     id
   end
 
@@ -40,15 +40,15 @@ class GlitchTag < LiquidTagBase
   def option_to_query_pair(option)
     case option
     when "app"
-      ["previewSize", "100"]
+      %w[previewSize 100]
     when "code"
-      ["previewSize", "0"]
+      %w[previewSize 0]
     when "no-files"
-      ["sidebarCollapsed", "true"]
+      %w[sidebarCollapsed true]
     when "preview-first"
-      ["previewFirst", "true"]
+      %w[previewFirst true]
     when "no-attribution"
-      ["attributionHidden", "true"]
+      %w[attributionHidden true]
     end
   end
 
@@ -69,21 +69,13 @@ class GlitchTag < LiquidTagBase
     _, *options = input.split(" ")
 
     # 'app' and 'code' should cancel each other out
-    if (options & ["app", "code"]) == ["app", "code"]
-      options = options - ["app", "code"]
-    end
+    options -= %w[app code] if (options & %w[app code]) == %w[app code]
 
     # Validation
-    validated_options = options.map { |o| valid_option(o) }.reject { |e| e == nil }
+    validated_options = options.map { |o| valid_option(o) }.reject(&:nil?)
     raise StandardError, "Invalid Options" unless options.empty? || !validated_options.empty?
 
     build_options(options)
-  end
-
-  def build_uri(input)
-    id = parse_id(input)
-    query = parse_options(input)
-    "https://glitch.com/embed/#!/embed/#{id}?#{query}"
   end
 end
 

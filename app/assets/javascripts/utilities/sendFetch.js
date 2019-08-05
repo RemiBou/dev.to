@@ -49,6 +49,30 @@ function sendFetch(switchStatement, body) {
           credentials: 'same-origin',
         });
       };
+    case 'chat-creation':
+      return function(csrfToken) {
+        body.append('authenticity_token', csrfToken);
+        return window.fetch('/chat_channels/create_chat', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-Token': csrfToken,
+          },
+          body: body,
+          credentials: 'same-origin',
+        });
+      };
+    case 'block-chat':
+      return function(csrfToken) {
+        body.append('authenticity_token', csrfToken);
+        return window.fetch('/chat_channels/block_chat', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-Token': csrfToken,
+          },
+          body: body,
+          credentials: 'same-origin',
+        });
+      };
     case 'comment-creation':
       return function(csrfToken) {
         return window.fetch('/comments', {
@@ -77,4 +101,5 @@ function sendFetch(switchStatement, body) {
       console.log('A wrong switchStatement was used.');
       break;
   }
+  return true;
 }

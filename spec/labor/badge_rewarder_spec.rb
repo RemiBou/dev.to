@@ -1,4 +1,3 @@
-# rubocop:disable RSpec/ExampleLength, RSpec/MultipleExpectations
 require "rails_helper"
 
 RSpec.describe BadgeRewarder do
@@ -6,7 +5,31 @@ RSpec.describe BadgeRewarder do
     user = create(:user, created_at: 366.days.ago)
     newer_user = create(:user, created_at: 6.days.ago)
     older_user = create(:user, created_at: 390.days.ago)
-    create(:badge, title: "heyhey")
+    create(:badge, title: "one-year-club")
+    create(:badge, title: "heysddssdhey")
+    described_class.award_yearly_club_badges
+    expect(user.badge_achievements.size).to eq(1)
+    expect(newer_user.badge_achievements.size).to eq(0)
+    expect(older_user.badge_achievements.size).to eq(0)
+  end
+
+  it "rewards 2-year birthday badge to birthday folks who registered 2 years ago" do
+    user = create(:user, created_at: 731.days.ago)
+    newer_user = create(:user, created_at: 6.days.ago)
+    older_user = create(:user, created_at: 800.days.ago)
+    create(:badge, title: "two-year-club")
+    create(:badge, title: "heysddssdhey")
+    described_class.award_yearly_club_badges
+    expect(user.badge_achievements.size).to eq(1)
+    expect(newer_user.badge_achievements.size).to eq(0)
+    expect(older_user.badge_achievements.size).to eq(0)
+  end
+
+  it "rewards 3-year birthday badge to birthday folks who registered 3 years ago" do
+    user = create(:user, created_at: 1096.days.ago)
+    newer_user = create(:user, created_at: 6.days.ago)
+    older_user = create(:user, created_at: 1200.days.ago)
+    create(:badge, title: "three-year-club")
     create(:badge, title: "heysddssdhey")
     described_class.award_yearly_club_badges
     expect(user.badge_achievements.size).to eq(1)
@@ -53,6 +76,29 @@ RSpec.describe BadgeRewarder do
     expect(BadgeAchievement.where(badge_id: badge.id).size).to eq(2)
   end
 
+  describe "::award_streak_badge" do
+    it "rewards badge to users with four straight weeks of articles" do
+      create(:badge, title: "4 Week Streak", slug: "4-week-streak")
+      user = create(:user)
+      create(:article, user: user, published: true, published_at: 26.days.ago)
+      create(:article, user: user, published: true, published_at: 19.days.ago)
+      create(:article, user: user, published: true, published_at: 12.days.ago)
+      create(:article, user: user, published: true, published_at: 5.days.ago)
+      described_class.award_streak_badge(4)
+      expect(user.badges.size).to eq(1)
+    end
+
+    it "does not reward beloved comment to non-qualifying comment" do
+      create(:badge, title: "4 Week Streak", slug: "4-week-streak")
+      user = create(:user)
+      create(:article, user: user, published: true, published_at: 26.days.ago)
+      create(:article, user: user, published: true, published_at: 19.days.ago)
+      create(:article, user: user, published: true, published_at: 5.days.ago)
+      described_class.award_streak_badge(4)
+      expect(user.badges.size).to eq(0)
+    end
+  end
+
   describe "::award_contributor_badges_from_github" do
     let(:my_ocktokit_client) { instance_double(Octokit::Client) }
     let(:user) { create(:user) }
@@ -72,6 +118,67 @@ RSpec.describe BadgeRewarder do
       expect(user.badge_achievements.size).to eq(1)
     end
   end
-end
 
-# rubocop:enable RSpec/ExampleLength, RSpec/MultipleExpectations
+  describe "::award_tag_badges" do
+    let(:user) { create(:user) }
+    let(:second_user) { create(:user) }
+    let(:third_user) { create(:user) }
+    let(:article) { create(:article, user_id: user.id) }
+    let(:second_article) { create(:article, user_id: second_user.id) }
+    let(:third_article) { create(:article, user_id: third_user.id) }
+    let(:badge) { create(:badge) }
+    let(:tag) { create(:tag, badge_id: badge.id) }
+
+    it "awards badge if qualifying article by score and tagged appropriately" do
+      article.update_columns(cached_tag_list: tag.name, score: 101)
+      described_class.award_tag_badges
+      expect(user.badge_achievements.size).to eq(1)
+      expect(user.badge_achievements.last.badge_id).to eq(badge.id)
+    end
+    it "renders html for message" do
+      article.update_columns(cached_tag_list: tag.name, score: 101)
+      described_class.award_tag_badges
+      expect(user.badge_achievements.size).to eq(1)
+      expect(user.badge_achievements.last.rewarding_context_message).to include("<a ")
+      expect(user.badge_achievements.last.rewarding_context_message).to include(ApplicationConfig["APP_DOMAIN"])
+      expect(user.badge_achievements.last.rewarding_context_message).to include(article.title)
+      expect(user.badge_achievements.last.rewarding_context_message).to include(article.path)
+    end
+
+    it "does not award badge if qualifying article by score but not tagged appropriately" do
+      article.update_columns(cached_tag_list: "differenttag", score: 101)
+      described_class.award_tag_badges
+      expect(user.badge_achievements.size).to eq(0)
+    end
+
+    it "does not award badge if qualifying article by score but not from past week" do
+      article.update_columns(published_at: 8.days.ago, cached_tag_list: tag.name, score: 333)
+      described_class.award_tag_badges
+      expect(user.badge_achievements.size).to eq(0)
+    end
+
+    it "does not award badge if tagged appropriately but not published" do
+      article.update_columns(cached_tag_list: tag.name, score: 101, published: false)
+      described_class.award_tag_badges
+      expect(user.badge_achievements.size).to eq(0)
+    end
+    # rubocop:disable RSpec/ExampleLength
+    it "does not award badge to user who has previously won" do
+      article.update_columns(cached_tag_list: tag.name, score: 201)
+      second_article.update_columns(cached_tag_list: tag.name, score: 150)
+      third_article.update_columns(cached_tag_list: tag.name, score: 120)
+      described_class.award_tag_badges
+      expect(user.reload.badge_achievements.size).to eq(1)
+      expect(second_user.reload.badge_achievements.size).to eq(0)
+      described_class.award_tag_badges
+      expect(user.reload.badge_achievements.size).to eq(1)
+      expect(second_user.reload.badge_achievements.size).to eq(1)
+      expect(third_user.reload.badge_achievements.size).to eq(0)
+      described_class.award_tag_badges
+      expect(user.reload.badge_achievements.size).to eq(1)
+      expect(second_user.reload.badge_achievements.size).to eq(1)
+      expect(third_user.reload.badge_achievements.size).to eq(1)
+    end
+    # rubocop:enable RSpec/ExampleLength
+  end
+end

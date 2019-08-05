@@ -5,22 +5,24 @@ class GithubReposController < ApplicationController
     authorize GithubRepo
     @client = create_octokit_client
     @repo = GithubRepo.find_or_create(fetched_repo_params)
+    current_user.touch(:github_repos_updated_at)
     if @repo.valid?
       redirect_to "/settings/integrations", notice: "GitHub repo added"
     else
       redirect_to "/settings/integrations",
-        error: "There was an error adding your Github repo"
+                  error: "There was an error adding your Github repo"
     end
   end
 
   def update
     @repo = GithubRepo.find(params[:id])
+    current_user.touch(:github_repos_updated_at)
     authorize @repo
     if @repo.update(featured: false)
       redirect_to "/settings/integrations", notice: "GitHub repo added"
     else
       redirect_to "/settings/integrations",
-        error: "There was an error removing your Github repo"
+                  error: "There was an error removing your Github repo"
     end
   end
 

@@ -1,10 +1,10 @@
 class Identity < ApplicationRecord
   belongs_to :user
-  validates_presence_of :uid, :provider
-  validates_uniqueness_of :uid, scope: :provider
-  validates_uniqueness_of :provider, scope: :uid
-  validates_uniqueness_of :user_id, scope: :provider
-  validates :provider, inclusion: { in: %w(github twitter) }
+  has_many  :backup_data, as: :instance, class_name: "BackupData", dependent: :destroy
+  validates :uid, :provider, presence: true
+  validates :uid, uniqueness: { scope: :provider }, if: proc { |i| i.uid_changed? || i.provider_changed? }
+  validates :user_id, uniqueness: { scope: :provider }, if: proc { |i| i.user_id_changed? || i.provider_changed? }
+  validates :provider, inclusion: { in: %w[github twitter] }
 
   serialize :auth_data_dump
 

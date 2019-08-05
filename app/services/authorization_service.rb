@@ -10,6 +10,7 @@ class AuthorizationService
   def get_user
     identity = build_identity
     return signed_in_resource if user_identity_exists(identity)
+
     user = proper_user(identity)
     user = if user.nil?
              build_user(identity)
@@ -24,6 +25,7 @@ class AuthorizationService
 
   def add_social_identity_data(user)
     return unless auth&.provider && auth&.extra && auth.extra.raw_info
+
     if auth.provider == "twitter"
       user.twitter_created_at = auth.extra.raw_info.created_at
       user.twitter_followers_count = auth.extra.raw_info.followers_count.to_i
@@ -37,6 +39,7 @@ class AuthorizationService
     identity = Identity.find_for_oauth(auth)
     identity.token = auth.credentials.token
     identity.secret = auth.credentials.secret
+    auth["extra"].delete("access_token") if auth["extra"]["access_token"]
     identity.auth_data_dump = auth
     identity.save
     identity
@@ -54,29 +57,23 @@ class AuthorizationService
         twitter_username: (auth.info.nickname if auth.provider == "twitter"),
         password: Devise.friendly_token[0, 20],
       )
-      if user.name.blank?
-        user.name = auth.info.nickname
-      end
+      user.name = auth.info.nickname if user.name.blank?
       user.skip_confirmation!
-      user.remember_me!
-      user.remember_me = true
+      user.set_remember_fields
       add_social_identity_data(user)
       user.saw_onboarding = false
+      user.editor_version = "v2"
       user.save!
     end
     user
   end
 
   def update_user(user)
-    user.remember_me!
-    user.remember_me = true
-    if auth.provider == "github" && auth.info.nickname != user.github_username
-      user.github_username = auth.info.nickname
-    end
-    if auth.provider == "twitter" && auth.info.nickname != user.twitter_username
-      user.twitter_username = auth.info.nickname
-    end
+    user.set_remember_fields
+    user.github_username = auth.info.nickname if auth.provider == "github" && auth.info.nickname != user.github_username
+    user.twitter_username = auth.info.nickname if auth.provider == "twitter" && auth.info.nickname != user.twitter_username
     add_social_identity_data(user)
+    user.profile_updated_at = Time.current if user.twitter_username_changed? || user.github_username_changed?
     user.save
     user
   end
@@ -86,16 +83,16 @@ class AuthorizationService
       signed_in_resource
     elsif identity.user
       identity.user
-    elsif !auth.info.email.blank?
-      User.find_by_email(auth.info.email)
+    elsif auth.info.email.present?
+      User.find_by(email: auth.info.email)
     end
   end
 
   def set_identity(identity, user)
-    if identity.user_id.blank?
-      identity.user = user
-      identity.save!
-    end
+    return if identity.user_id.present?
+
+    identity.user = user
+    identity.save!
   end
 
   def user_identity_exists(identity)

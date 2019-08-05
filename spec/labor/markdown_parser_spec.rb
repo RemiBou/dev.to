@@ -8,31 +8,37 @@ RSpec.describe MarkdownParser do
     described_class.new(raw_markdown).finalize
   end
 
-  it "works" do
+  it "renders plain text as-is" do
     expect(basic_parsed_markdown.finalize).to include(random_word)
   end
 
-  it "escape liquid tags in codeblock" do
+  it "escapes liquid tags in codeblock" do
     code_block = "```\n{% what %}\n```"
     expect(generate_and_parse_markdown(code_block)).to include("{% what %}")
   end
 
-  it "escape liquid tags in inline code" do
+  it "escapes liquid tags in code spans" do
+    code_span = "``{% what %}``"
+    expect(generate_and_parse_markdown(code_span)).to include("{% what %}")
+  end
+
+  it "renders double backtick code spans properly" do
+    code_span = "``#{random_word}``"
+    expect(generate_and_parse_markdown(code_span)).to include random_word
+  end
+
+  it "renders a double backtick codespan with a word wrapped in single backticks properly" do
+    code_span = "`` `#{random_word}` ``"
+    expect(generate_and_parse_markdown(code_span)).to include "`#{random_word}`"
+  end
+
+  it "escapes liquid tags in inline code" do
     inline_code = "`{% what %}`"
     expect(generate_and_parse_markdown(inline_code)).to include(inline_code[1..-2])
   end
 
-  context "when provided with a link in inline code" do
-    inline_code = "[dev.to](https://dev.to)"
-    let(:evaluated_markdown) { described_class.new(inline_code).evaluate_inline_markdown }
-
-    it "renders with target _blank" do
-      expect(evaluated_markdown).to include("target=\"_blank\"")
-    end
-
-    it "avoids the traget _blank vulnerability" do
-      expect(evaluated_markdown).to include("noopener", "noreferrer")
-    end
+  it "raises an error if it detects a XSS attempt" do
+    expect { generate_and_parse_markdown("data:text/html") }.to raise_error(ArgumentError)
   end
 
   context "when provided with an @username" do
@@ -62,6 +68,14 @@ RSpec.describe MarkdownParser do
     it "raises error if liquid tag was used incorrectly" do
       bad_ltag = "{% #{random_word} %}"
       expect { generate_and_parse_markdown(bad_ltag) }.to raise_error(StandardError)
+    end
+  end
+
+  context "when provided with kbd tag" do
+    it "leaves the kbd tag in place" do
+      inline_kbd = generate_and_parse_markdown("<kbd>Ctrl</kbd> + <kbd>,</kbd>")
+      inline_kbd = Nokogiri::HTML(inline_kbd).at("p").inner_html
+      expect(inline_kbd).to eq("<kbd>Ctrl</kbd> + <kbd>,</kbd>")
     end
   end
 
@@ -113,6 +127,13 @@ RSpec.describe MarkdownParser do
     it "wraps the image with Cloudinary" do
       expect(generate_and_parse_markdown(markdown_with_img)).
         to include("https://res.cloudinary.com")
+    end
+  end
+
+  context "when a colon emoji is used" do
+    it "doesn't change text in codeblock" do
+      result = generate_and_parse_markdown("<span>:o:<code>:o:</code>:o:<code>:o:</code>:o:<span>:o:</span>:o:</span>")
+      expect(result).to include("<span>⭕️<code>:o:</code>⭕️<code>:o:</code>⭕️<span>⭕️</span>⭕️</span>")
     end
   end
 

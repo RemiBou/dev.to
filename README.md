@@ -1,36 +1,33 @@
 <div align="center">
   <br>
-  <img
-    alt="DEV"
-    src="https://thepracticaldev.s3.amazonaws.com/i/ro3538by3b2fupbs63sr.png"
-    width=500px
-  />
+  <img alt="DEV" src="https://thepracticaldev.s3.amazonaws.com/i/ro3538by3b2fupbs63sr.png" width="500px">
   <h1>DEV Community 👩‍💻👨‍💻</h1>
   <strong>The Human Layer of the Stack</strong>
 </div>
-<br/>
+<br>
 <p align="center">
   <a href="https://www.ruby-lang.org/en/">
-    <img src="https://img.shields.io/badge/Ruby-v2.5.3-green.svg" alt="ruby version"/>
+    <img src="https://img.shields.io/badge/Ruby-v2.6.3-green.svg" alt="ruby version">
   </a>
   <a href="http://rubyonrails.org/">
-    <img src="https://img.shields.io/badge/Rails-v5.1.6-brightgreen.svg" alt="rails version"/>
+    <img src="https://img.shields.io/badge/Rails-v5.2.3-brightgreen.svg" alt="rails version">
   </a>
   <a href="https://travis-ci.com/thepracticaldev/dev.to">
-    <img src="https://travis-ci.com/thepracticaldev/dev.to.svg?branch=master" alt="Travis Status for thepracticaldev/dev.to"/>
+    <img src="https://travis-ci.com/thepracticaldev/dev.to.svg?branch=master" alt="Travis Status for thepracticaldev/dev.to">
   </a>
   <a href="https://codeclimate.com/github/thepracticaldev/dev.to/maintainability">
-    <img src="https://api.codeclimate.com/v1/badges/ce45bf63293073364bcb/maintainability" />
+    <img src="https://api.codeclimate.com/v1/badges/ce45bf63293073364bcb/maintainability" alt="Code Climate maintainability">
   </a>
   <a href="https://codeclimate.com/github/thepracticaldev/dev.to/test_coverage">
-    <img src="https://api.codeclimate.com/v1/badges/ce45bf63293073364bcb/test_coverage" />
+    <img src="https://api.codeclimate.com/v1/badges/ce45bf63293073364bcb/test_coverage" alt="Code Climate test coverage">
   </a>
-  <a href="https://www.skylight.io/app/applications/K9H5IV3RqKGu">
-    <img src="https://badges.skylight.io/status/K9H5IV3RqKGu.svg?token=Ofd-9PTSyus3BqEZZZbM1cWKJ94nHWaPiTphGsWJMAY" />
+  <a href="https://oss.skylight.io/app/applications/K9H5IV3RqKGu">
+    <img src="https://badges.skylight.io/status/K9H5IV3RqKGu.svg?token=Ofd-9PTSyus3BqEZZZbM1cWKJ94nHWaPiTphGsWJMAY" alt="Skylight badge">
   </a>
   <a href="https://www.codetriage.com/thepracticaldev/dev.to">
-    <img src="https://www.codetriage.com/thepracticaldev/dev.to/badges/users.svg" alt="CodeTriage badge" />
+    <img src="https://www.codetriage.com/thepracticaldev/dev.to/badges/users.svg" alt="CodeTriage badge">
   </a>
+  <img src="https://flat.badgen.net/dependabot/thepracticaldev/dev.to?icon=dependabot" alt="Dependabot Badge" />
 </p>
 
 Welcome to the [dev.to](https://dev.to) codebase. We are so excited to have you. With your help, we can build out DEV to be more stable and better serve our community.
@@ -49,11 +46,11 @@ Welcome to the [dev.to](https://dev.to) codebase. We are so excited to have you.
     - [Husky hooks](#husky-hooks)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
+  - [Standard Installation](#standard-installation)
+  - [Docker Installation (BETA)](#docker-installation-beta)
   - [Starting the application](#starting-the-application)
   - [Suggested Workflow](#suggested-workflow)
 - [Additional docs](#additional-docs)
-- [Product Roadmap](#product-roadmap)
 - [Core Team Members](#core-team)
 - [License](#license)
 
@@ -65,7 +62,7 @@ We expect contributors to abide by our underlying [code of conduct](CODE_OF_COND
 
 ### Where to contribute
 
-All [issues](https://github.com/thepracticaldev/dev.to/issues) labeled with `approved` are up for grabs. For clarification on how we label issues, check out their definitions [here](https://github.com/thepracticaldev/dev.to/labels).
+All [issues](https://github.com/thepracticaldev/dev.to/issues) labeled with `help wanted` are up for grabs. For clarification on how we label issues, check out their definitions [here](https://github.com/thepracticaldev/dev.to/labels).
 
 When in doubt, ask a [core team member](#core-team)! You can mention us in any issues or ask on the [DEV Contributor thread](https://dev.to/devteam/devto-open-source-helpdiscussion-thread-v0-1l45). Any issue with the `good first issue` tag is typically a good place to start for anyone new to the project. For newer developers, try 'entry-level' issues.
 
@@ -73,7 +70,7 @@ When in doubt, ask a [core team member](#core-team)! You can mention us in any i
 
 **Fixing bugs** may also not require a lot of communication, but the more the better. Please surround bug fixes with ample tests. Bugs are magnets for other bugs. Write tests near bugs!
 
-**Building features** is the area which will require the most communication and/or negotiation. Every feature is subjective and open for debate. The [product roadmap](https://github.com/thepracticaldev/dev.to/projects) should be a good guide to follow. As always, when in doubt, ask!
+**Building features** is the area which will require the most communication and/or negotiation. Every feature is subjective and open for debate. If your feature involves user-facing design changes, please provide a mockup first so we can all get on the same page. As always, when in doubt, ask!
 
 ### How to contribute
 
@@ -82,6 +79,8 @@ When in doubt, ask a [core team member](#core-team)! You can mention us in any i
 3.  Code and commit your changes. Bonus points if you write a [good commit message](https://chris.beams.io/posts/git-commit/): `git commit -m 'Add some feature'`
 4.  Push to the branch: `git push origin feature/that-new-feature`
 5.  [Create a pull request](#create-a-pull-request) for your branch 🎉
+
+Note: be sure to [keep your fork in sync](https://docs.dev.to/getting-started/syncing/)!
 
 ## Contribution guideline
 
@@ -98,7 +97,7 @@ Some existing code may be poorly written or untested, so we must have more scrut
 #### Create a pull request
 
 - Try to keep the pull requests small. A pull request should try its very best to address only a single concern.
-- Make sure all tests pass and add additional tests for the code you submit. [More info here](https://docs.dev.to/testing/)
+- Make sure all tests pass and add additional tests for the code you submit. [More info here](https://docs.dev.to/tests/)
 - Document your reasoning behind the changes. Explain why you wrote the code in the way you did. The code should explain what it does.
 - If there's an existing issue related to the pull request, reference to it by adding something like `References/Closes/Fixes/Resolves #305`, where 305 is the issue number. [More info here](https://github.com/blog/1506-closing-issues-via-pull-requests)
 - If you follow the pull request template, you can't go wrong.
@@ -149,27 +148,25 @@ This section provides a high-level requirement & quick start guide. For detailed
 
 ### Standard Installation
 
-0.  Make sure all the prerequisites are installed.
-1.  Fork dev.to repository, ie. https://github.com/thepracticaldev/dev.to/fork
-1.  Clone your forked repository, ie. `git clone https://github.com/<your-username>/dev.to.git`
-1.  `gem install bundler`
-1.  `gem install foreman`
-1.  `bundle install`
-1.  `bin/yarn`
-1.  Set up your environment variables/secrets
-    - Take a look at `Envfile`. This file lists all the `ENV` variables we use and provides a fake default for any missing keys. You'll need to get your own free [Algolia credentials](http://docs.dev.to/get-api-keys-dev-env/#algolia) to get your development environment running.
-    - This [guide](http://docs.dev.to/get-api-keys-dev-env/) will show you how to get free API keys for additional services that may be required to run certain parts of the app.
-    - For any key that you wish to enter/replace:
-      1.  Create `config/application.yml` by copying from the provided template (ie. with bash: `cp config/sample_application.yml config/application.yml`). This is a personal file that is ignored in git.
-      2.  Obtain the development variable and apply the key you wish to enter/replace. ie:
-      ```
-      GITHUB_KEY: "SOME_REAL_SECURE_KEY_HERE"
-      GITHUB_SECRET: "ANOTHER_REAL_SECURE_KEY_HERE"
-      ```
-    - If you are missing `ENV` variables on bootup, `envied` gem will alert you with messages similar to `'error_on_missing_variables!': The following environment variables should be set: A_MISSING_KEY.`.
-    - You do not need "real" keys for basic development. Some features require certain keys, so you may be able to add them as you go.
-1.  Run `bin/setup`
-1.  That's it! Run `bin/startup` to start the application and head to `http://localhost:3000/`
+1. Make sure all the prerequisites are installed.
+1. Fork dev.to repository, ie. https://github.com/thepracticaldev/dev.to/fork
+1. Clone your forked repository, ie. `git clone https://github.com/<your-username>/dev.to.git`
+1. Set up your environment variables/secrets
+
+   - Take a look at `Envfile`. This file lists all the `ENV` variables we use and provides a fake default for any missing keys. You'll need to get your own free [Algolia credentials](https://docs.dev.to/backend/algolia/) to get your development environment running.
+   - This [guide](https://docs.dev.to/backend/) will show you how to get free API keys for additional services that may be required to run certain parts of the app.
+   - For any key that you wish to enter/replace:
+     1. Create `config/application.yml` by copying from the provided template (ie. with bash: `cp config/sample_application.yml config/application.yml`). This is a personal file that is ignored in git.
+     2. Obtain the development variable and apply the key you wish to enter/replace. ie:
+     ```
+     GITHUB_KEY: "SOME_REAL_SECURE_KEY_HERE"
+     GITHUB_SECRET: "ANOTHER_REAL_SECURE_KEY_HERE"
+     ```
+   - If you are missing `ENV` variables on bootup, `envied` gem will alert you with messages similar to `'error_on_missing_variables!': The following environment variables should be set: A_MISSING_KEY.`.
+   - You do not need "real" keys for basic development. Some features require certain keys, so you may be able to add them as you go.
+
+1. Run `bin/setup`
+1. That's it! Run `bin/startup` to start the application and head to `http://localhost:3000/`
 
 [View Full Installation Documentation](https://docs.dev.to/installation/)
 
@@ -179,11 +176,18 @@ Our docker implementation is incomplete and may not work smoothly. Please kindly
 
 1. Install `docker` and `docker-compose`
 1. `git clone git@github.com:thepracticaldev/dev.to.git`
-1. Set environment variables above as described in the "Basic Installation"
+1. Set environment variables above as described in the ["Standard Installation"](#standard-installation)
 1. run `docker-compose build`
 1. run `docker-compose run web rails db:setup`
+1. run `docker-compose run web yarn install`
 1. run `docker-compose up`
 1. That's it! Navigate to `localhost:3000`
+
+### Gitpod Installation
+
+Simply open dev.to in Gitpod, a free online dev environment for GitHub:
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/thepracticaldev/dev.to)
 
 #### Starting the application
 
@@ -204,27 +208,15 @@ Current gotchas: potential environment issues with external services need to be 
 
 We use [Spring](https://github.com/rails/spring) and it is already included in the project.
 
-1.  Use the provided bin stubs to automatically start Spring, i.e. `bin/rails server`, `bin/rspec spec/models/`, `bin/rake db:migrate`.
-2.  If Spring isn't picking up on new changes, use `spring stop`. For example, Spring should always be restarted if there's a change in environment key.
-3.  Check Spring's status whenever with `spring status`.
+1.  Use the provided bin stubs to automatically start Spring, i.e. `bin/rails server`, `bin/rspec spec/models/`, `bin/rails db:migrate`.
+1.  If Spring isn't picking up on new changes, use `spring stop`. For example, Spring should always be restarted if there's a change in environment key.
+1.  Check Spring's status whenever with `spring status`.
 
 Caveat: `bin/rspec` is not equipped with Spring because it affects Simplecov's result. Instead use `bin/spring rspec`.
 
 ## Additional docs
 
 [Check out our dedicated docs page for more technical documentation.](https://docs.dev.to)
-
-## Product Roadmap
-
-Our new product roadmap can be found [here](https://github.com/thepracticaldev/dev.to/projects/1). Many notes need to be converted to issues but this should provide an overview of features we plan to work on, as well as features we are considering.
-
-Core team members will move issues along the project board as they progress.
-
-- Ideas & Requests: features up for discussion.
-- Needs Owners: features in need of an owner.
-- Committed: features we're committed to building -- free for contributors to work on, but please communicate with the owner beforehand.
-- In Progress (early stage): work has begun on feature.
-- In Progress (late stage): feature is near completion.
 
 ## Core team
 
@@ -233,6 +225,13 @@ Core team members will move issues along the project board as they progress.
 - [@peterkimfrank](https://dev.to/peter)
 - [@maestromac](https://dev.to/maestromac)
 - [@zhao-andy](https://dev.to/andy)
+- [@lightalloy](https://dev.to/lightalloy)
+- [@mariocsee](https://dev.to/mariocsee)
+- [@rhymes](https://dev.to/rhymes)
+
+## Vulnerability disclosure
+
+We welcome security research on DEV under the terms of our [vulnerability disclosure policy](https://dev.to/security).
 
 ## License
 
@@ -244,14 +243,10 @@ Our version of the CLA was adapted from the Microsoft Contributor License Agreem
 
 Any questions, please refer to our [license FAQ](http://docs.dev.to/license-faq/) doc or email yo@dev.to
 
-<br/>
+<br>
 
 <p align="center">
-  <img
-    alt="sloan"
-    width=250px
-    src="https://thepracticaldev.s3.amazonaws.com/uploads/user/profile_image/31047/af153cd6-9994-4a68-83f4-8ddf3e13f0bf.jpg"
-  />
-  <br/>
+  <img alt="Sloan, the sloth mascot" width="250px" src="https://thepracticaldev.s3.amazonaws.com/uploads/user/profile_image/31047/af153cd6-9994-4a68-83f4-8ddf3e13f0bf.jpg">
+  <br>
   <strong>Happy Coding</strong> ❤️
 </p>
